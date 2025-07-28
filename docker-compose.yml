@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8
+    container_name: review-mysql
+    environment:
+      MYSQL_DATABASE: reviewdb
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_USER: bekyt
+      MYSQL_PASSWORD: reviewpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+
+volumes:
+  mysql_data:
