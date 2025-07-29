@@ -1,12 +1,13 @@
 package com.review.review_system.service;
 
 import com.review.review_system.DTO.AuthResponse;
-import com.review.review_system.DTO.LoginRequest;
-import com.review.review_system.DTO.RegisterRequest;
+import com.review.review_system.DTO.*;
+import com.review.review_system.exception.EmailAlreadyExistsException;
 import com.review.review_system.model.User;
 import com.review.review_system.repository.UserRepository;
 import com.review.review_system.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -24,7 +26,7 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private  PasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -37,7 +39,7 @@ public class AuthService {
             throw new RuntimeException("Username already exists");
         }
         else if (request.getEmail() != null && userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException("Email already exists");
         }
         else if (request.getPhoneNumber() != null && userRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
             throw new RuntimeException("Phone number already exists");
@@ -54,23 +56,18 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public String login(LoginRequest request) {
-        User user;
 
-        if (request.getEmail() != null) {
-            user = userRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
-        } else if (request.getPhoneNumber() != null) {
-            user = userRepository.findByPhoneNumber(request.getPhoneNumber())
-                    .orElseThrow(() -> new UsernameNotFoundException("Phone number not found"));
-        } else {
-            throw new IllegalArgumentException("Email or phone number must be provided");
-        }
+    public JwtResponse login(LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("Invalid credentials");
-        }
+        // Load user from DB to include extra info if needed
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return jwtUtil.generateToken((UserDetails) user);
+        String jwt = jwtUtil.generateToken((UserDetails) user);
+        return new JwtResponse(jwt);
     }
+
 }

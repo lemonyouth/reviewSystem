@@ -60,7 +60,7 @@ public class Review {
     }
 
     public Long getUserId() {
-        return user.getUserId();
+        return user.getId();
     }
 
     public Long getPurchaseId() {

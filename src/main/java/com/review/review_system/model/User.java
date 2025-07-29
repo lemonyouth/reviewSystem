@@ -13,6 +13,7 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @Setter
     @Column(unique = true, nullable = false)
     private String username;
@@ -41,11 +42,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-    public User orElseThrow(Object userNotFound) {
-    }
-
-    public String getUsername() {
-    }
 
     // 之后可以扩展字段：email、avatar、role等
 
