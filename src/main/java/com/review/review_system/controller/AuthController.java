@@ -2,6 +2,7 @@ package com.review.review_system.controller;
 
 import com.review.review_system.DTO.*;
 import com.review.review_system.service.AuthService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class AuthController {
         return ResponseEntity.ok("User registered successfully");
     }
 
+    @Transactional // atomic, succeed or all fail
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {

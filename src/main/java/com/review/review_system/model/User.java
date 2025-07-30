@@ -3,11 +3,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     @Getter
     @Setter
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +44,11 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
 
 
     // 之后可以扩展字段：email、avatar、role等

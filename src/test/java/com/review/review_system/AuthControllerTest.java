@@ -1,6 +1,7 @@
 package com.review.review_system;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.review.review_system.DTO.LoginRequest;
 import com.review.review_system.DTO.RegisterRequest;
 import org.junit.jupiter.api.Test;
 
@@ -52,6 +53,59 @@ public class AuthControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(content().string("Email already exists"));
 
+    }
+    @Test
+    public void testRegister3() throws Exception {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setEmail("test3@example.com");
+        registerRequest.setPassword("password123");
+        registerRequest.setUsername("testuser3");
+
+        String json = objectMapper.writeValueAsString(registerRequest);
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testLogin1byUserName() throws Exception {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("testuser1");
+        loginRequest.setPassword("password123");
+//        loginRequest.setEmail("test1@example.com");
+        String json = objectMapper.writeValueAsString(loginRequest);
+        mockMvc.perform((post("/api/auth/login").
+                contentType(MediaType.APPLICATION_JSON))
+                .content(json))
+                .andExpect(status().isOk());
+    }
+    @Test
+    public void testLoginByEmail() throws Exception {
+        LoginRequest loginRequest = new LoginRequest();
+
+        loginRequest.setPassword("password123");
+        loginRequest.setEmail("test1@example.com");
+        String json = objectMapper.writeValueAsString(loginRequest);
+        mockMvc.perform((post("/api/auth/login").
+                        contentType(MediaType.APPLICATION_JSON))
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testLogin2() throws Exception {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("testuser4");
+        loginRequest.setPassword("password123");
+        loginRequest.setEmail("test1@example.com");
+        String json = objectMapper.writeValueAsString(loginRequest);
+        mockMvc.perform((post("/api/auth/login").
+                        contentType(MediaType.APPLICATION_JSON))
+                        .content(json))
+                .andExpect(status().isOk());
     }
 
 }

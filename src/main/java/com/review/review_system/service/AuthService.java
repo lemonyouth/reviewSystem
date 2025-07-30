@@ -8,6 +8,7 @@ import com.review.review_system.repository.UserRepository;
 import com.review.review_system.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.review.review_system.security.SecurityConfig;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -58,15 +61,40 @@ public class AuthService {
 
 
     public JwtResponse login(LoginRequest request) {
+        String loginIdentifier = null;
+
+        if (request.getUsername() != null && !request.getUsername().isBlank()) {
+            loginIdentifier = request.getUsername();
+        } else if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            loginIdentifier = request.getEmail();
+        } else if (request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank()) {
+            loginIdentifier = request.getPhoneNumber();
+        } else {
+            throw new UsernameNotFoundException("No valid login identifier provided.");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(loginIdentifier, request.getPassword())
         );
 
-        // Load user from DB to include extra info if needed
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        String jwt = jwtUtil.generateToken((UserDetails) user);
+
+        // Load user from DB to include extra info if needed
+
+        Optional<User> userOpt = Optional.empty();
+
+        if (request.getUsername() != null) {
+            userOpt = userRepository.findByUsername(request.getUsername());
+        } else if (request.getEmail() != null) {
+            userOpt = userRepository.findByEmail(request.getEmail());
+        } else if (request.getPhoneNumber() != null) {
+            userOpt = userRepository.findByPhoneNumber(request.getPhoneNumber());
+        }
+
+        User user = userOpt.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+
+        String jwt = jwtUtil.generateToken(user);
         return new JwtResponse(jwt);
     }
 
