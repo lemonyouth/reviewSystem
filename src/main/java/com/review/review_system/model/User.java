@@ -50,8 +50,10 @@ public class User implements UserDetails {
         return List.of();
     }
 
-
-    // 之后可以扩展字段：email、avatar、role等
+    @Setter
+    @Getter
+    @Enumerated(EnumType.STRING)
+    private Role role;  // ADMIN / USER
 
 
 
