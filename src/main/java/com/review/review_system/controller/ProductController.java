@@ -5,6 +5,7 @@ import com.review.review_system.model.Product;
 import com.review.review_system.model.Review;
 import com.review.review_system.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,9 +20,16 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<Page<Product>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        Page<Product> products = productService.getAllProducts(page, size, sortBy, direction);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{productId}")

@@ -10,8 +10,9 @@ import lombok.Setter;
 @Table(name = "products")
 public class Product {
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+    private Long id;
 
     @Column(nullable = false)
     private String productName;
@@ -20,7 +21,7 @@ public class Product {
     private float price;
 
     public Product(Long productId, String productName, float price) {
-        this.productId = productId;
+        this.id = productId;
         this.productName = productName;
         this.price = price;
     }
