@@ -12,7 +12,25 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    restart: always
+    networks:
+      - review-net
+
+  app:
+    build: .
+    container_name: review-app
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/reviewdb
+      SPRING_DATASOURCE_USERNAME: bekyt
+      SPRING_DATASOURCE_PASSWORD: reviewpass
+    networks:
+      - review-net
 
 volumes:
   mysql_data:
+
+networks:
+  review-net:
