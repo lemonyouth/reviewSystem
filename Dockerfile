@@ -1,5 +1,5 @@
 # 使用官方 OpenJDK 作为基础镜像
-FROM eclipse-temurin:24-jdk
+FROM eclipse-temurin:17-jdk
 
 ## 创建应用目录并设置权限（Alpine 需要）
 #RUN mkdir -p /app && chown -R 1000:1000 /app
