@@ -4,8 +4,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
-
+import java.util.List;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 @Entity
 @Table(name = "reviews")
 public class Review {
@@ -45,6 +47,23 @@ public class Review {
     @Setter
     @Column(nullable = false)
     private LocalDateTime time;
+
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewImage> images = new ArrayList<>();
+
+    public void addImage(ReviewImage image) {
+        images.add(image);
+        image.setReview(this); // maintain bidirectional link
+    }
+
+    public void removeImage(ReviewImage image) {
+        images.remove(image);
+        image.setReview(null); // break bidirectional link
+    }
+
+
 
     public Review(Long id, User user, Purchase purchase, int rating, String comment, LocalDateTime time) {
         this.id = id;
