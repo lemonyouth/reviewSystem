@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Entity
-@Table(name = "reviews")
+@Table(name = "reviews", indexes = {
+        @Index(name = "idx_review_user", columnList = "user_id"),
+        @Index(name = "idx_review_purchase", columnList = "purchase_id")
+})
 public class Review {
     @Getter
     @Setter
@@ -42,6 +45,12 @@ public class Review {
     @Setter
     @Column(nullable = true)
     private String comment;
+
+    @Getter
+    @Setter
+    @Column(nullable = true)
+    private String appendContent;
+
 
     @Getter
     @Setter

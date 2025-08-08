@@ -116,5 +116,15 @@ public class ReviewService {
         reviewRepository.deleteById(reviewId);
     }
 
+    public Review appendReview(Long reviewId, String comment) {
+        Review  review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+        if (review.getAppendContent() != null && !review.getAppendContent().isEmpty()) {
+            throw new RuntimeException("You have already appended extra review");
+        }
+        review.setAppendContent(comment);
+        return reviewRepository.save(review);
+    }
+
     // Optionally: Add other methods like createReview, getAllReviews, etc.
 }

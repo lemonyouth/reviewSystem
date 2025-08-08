@@ -81,6 +81,10 @@ public class ReviewController {
         reviewService.deleteReview(reviewId);
         return ResponseEntity.noContent().build();
     }
-
+    @PostMapping("/{reviewId}/append")
+    public ResponseEntity<Review> appendReview(@PathVariable Long reviewId, String appendContent) {
+        Review saved = reviewService.appendReview(reviewId, appendContent);
+        return ResponseEntity.ok(saved);
+    }
 
 }
